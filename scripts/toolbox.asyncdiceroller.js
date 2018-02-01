@@ -7,7 +7,7 @@
 
 			this.scan = function () {
 				//var inputstring = "/([1-9]\\d*)?d([1-9]\\d*)\\s*([+-−]\\s*\\d+)?/i";
-				var inputstring = "/([+−-]\\d+)|(([1-9]\\d*)?d([1-9]\\d*)\\s*([+-−]\\s*\\d+)?)/i";
+				var inputstring = "/([+−-]\\d+)|(([1-9]\\d*)?d([1-9]\\d*)\\s*([+-−]\\s*\\d+)?)|percentile dice/i";
 				var flags = inputstring.replace(/.*\/([gimy]*)$/, '$1');
 				var pattern = inputstring.replace(new RegExp('^/(.*?)/' + flags + '$'), '$1');
 				var regex = new RegExp(pattern, flags);
@@ -20,7 +20,8 @@
 							className: 'tb-roller',
 							exclude: [
 								'a.view-rules *',
-								'div.tb-modal *'
+								'div.tb-modal *',
+								'.ddb-homebrew-create-form-fields-item-input *'
 							],
 							each: function(item) {
 								$(item).attr('title', 'Roll {0}'.format($(item).text()));
@@ -35,7 +36,7 @@
 
 			this.bind = function () {
 				$('body').on('click', '.tb-roller', function() {
-					var dice = $(this).text().replace(/ /g,''),
+					var dice = $(this).text().replace(/ /g,'').replace(/percentiledice/gi, 'd100'),
 				        title = 'Dice Roller';
 
 					$.modal(_this.roll(dice, title), title, [{
@@ -51,11 +52,24 @@
 
 			this.roll = function (dice, title) {
 				var diceRolls = droll.roll(dice.replace('−', '-')),
+					diceRolls2,
+					advantage,
 					rolls = "";
 
 				if (diceRolls == false) {
+					advantage = true;
 					dice = "1d20{0}".format(dice);
 					diceRolls = droll.roll(dice);
+					advantage = true;
+
+					diceRolls2 = advantage && droll.roll(dice);
+				}else{
+					// Find the dieSize
+					var match = /^(\d+)?d(\d+)([+-]\d+)?$/.exec(dice),
+					dieSize = match[2];
+					advantage = (dieSize === '20');
+
+					diceRolls2 = advantage && droll.roll(dice.replace('−', '-'))
 				}
 
 				if (diceRolls !== false) {
@@ -71,6 +85,7 @@
 					rolls += " = {0}".format(diceRolls.total);
 
 					var content = '<h6>Rolling {0}</h6><p>{1}</p><h5>Total: {2}</h5>'.format(dice, rolls, diceRolls.total);
+					content += advantage ? '<hr><h6>Rolling {0}</h6><p>{1}</p><h5>Total: {2}</h5>'.format(dice, rolls, diceRolls2.total) : '';
 
 					return content;
 				}
