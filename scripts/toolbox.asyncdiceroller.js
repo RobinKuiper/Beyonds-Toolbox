@@ -51,20 +51,24 @@
 			}
 
 			this.roll = function (dice, title) {
-				// Find the dieSize
-				var match = /^(\d+)?d(\d+)([+-]\d+)?$/.exec(dice),
-					dieSize = match[2];
-
 				var diceRolls = droll.roll(dice.replace('−', '-')),
-					advantage = (dieSize === '20'),
-					diceRolls2 = advantage && droll.roll(dice.replace('−', '-')),
+					diceRolls2,
+					advantage,
 					rolls = "";
 
 				if (diceRolls == false) {
-					advantage = true;
 					dice = "1d20{0}".format(dice);
 					diceRolls = droll.roll(dice);
+					advantage = true;
+
 					diceRolls2 = advantage && droll.roll(dice);
+				}else{
+					// Find the dieSize
+					var match = /^(\d+)?d(\d+)([+-]\d+)?$/.exec(dice),
+					dieSize = match[2];
+					advantage = (dieSize === '20');
+
+					diceRolls2 = advantage && droll.roll(dice.replace('−', '-'))
 				}
 
 				if (diceRolls !== false) {
