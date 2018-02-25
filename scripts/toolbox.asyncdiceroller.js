@@ -7,7 +7,7 @@
 
 			this.scan = function () {
 				//var inputstring = "/([1-9]\\d*)?d([1-9]\\d*)\\s*([+-−]\\s*\\d+)?/i";
-				var inputstring = "/([+−-]\\d+)|(([1-9]\\d*)?d([1-9]\\d*)\\s*([+-−]\\s*\\d+)?)/i";
+				var inputstring = "/([+−-]\\d+)|(([1-9]\\d*)?d([1-9]\\d*)\\s*([+-−]\\s*\\d+)?)|percentile dice/i";
 				var flags = inputstring.replace(/.*\/([gimy]*)$/, '$1');
 				var pattern = inputstring.replace(new RegExp('^/(.*?)/' + flags + '$'), '$1');
 				var regex = new RegExp(pattern, flags);
@@ -36,7 +36,7 @@
 
 			this.bind = function () {
 				$('body').on('click', '.tb-roller', function() {
-					var dice = $(this).text().replace(/ /g,''),
+					var dice = $(this).text().replace(/ /g,'').replace(/percentiledice/gi, 'd100'),
 				        title = 'Dice Roller';
 
 					$.modal(_this.roll(dice, title), title, [{
