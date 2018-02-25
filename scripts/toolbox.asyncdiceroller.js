@@ -57,7 +57,6 @@
 					rolls = "";
 
 				if (diceRolls == false) {
-					advantage = true;
 					dice = "1d20{0}".format(dice);
 					diceRolls = droll.roll(dice);
 					advantage = true;
